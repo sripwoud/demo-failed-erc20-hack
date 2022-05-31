@@ -16,7 +16,7 @@ This doesn't work as the allowances in the caller contract (the scam contract) w
 So the hack will have no effect. (See [test case](https://github.com/r1oga/demo-failed-erc20-hack/blob/df18ed55e0953f52c2be783e8d311a7d1d9bf3e8/test/scams.js#L44))
 
 ## Scam 2 - Scam 3
-Performing ETH sends withing other functions calls.
+Performing native ETH `send`/`transfer` within other functions calls.
 This doesn't work either. It is not possible to override `nonpayable` (defined in the parent contract without `payable`) functions
 with the `payable` modifier.
 The solidity contracts won't compile.

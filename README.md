@@ -29,6 +29,11 @@ TypeError: Overriding function changes state mutability from "nonpayable" to "pa
 ## Scam 4 - forcing out of gas error
 Possible. But is not benefiting anyone. Not even the person who deployed the scam contract...
 
+## Scam 5 - stealing ETH within a token transfer
+Hide an ETH send in a token transfer.  
+The function signature is still compliant to the standard: `transfer(address to, uint256 amount)`, but the function is made payable.  
+So it is possible to steal ETH **provided there is ETH value sent when broadcasting the tx**. Otherwise there is nothing to steal. **Who builds the tx controls whether ETH is send or not.**
+
 ### Tests
 
 ```shell

@@ -1,14 +1,16 @@
-const {expect} = require('chai')
-const {ethers} = require('hardhat')
+const { expect } = require('chai')
+const { ethers } = require('hardhat')
 const ABI = require('./ModifiedUsdcAbi.json')
 
 describe('Test Hack', function () {
   let usdc
   let scam
   let owner, spender
+  let accs
 
   before(async () => {
-    ;[owner, spender] = await ethers.getSigners()
+    accs = await ethers.getSigners()
+    ;[owner, spender] = accs
 
     const Usdc = await ethers.getContractFactory('Usdc', owner)
     const Scam = await ethers.getContractFactory('Scam1', owner)
@@ -65,16 +67,37 @@ describe('Test Hack', function () {
       const _usdc = await ethers.getContractAt(ABI.abi, usdc.address, owner)
       expect(usdc.address).to.equal(_usdc.address)
 
-      await expect(() => _usdc.transfer(spender.address, 100)).to.changeTokenBalances(_usdc, [owner, spender], [-100, 100])
-      await expect(() => _usdc.transfer(spender.address, 100, {value: 0}).to.changeTokenBalances(_usdc, [owner, spender], [-100, 100]))
+      await expect(() =>
+        _usdc.transfer(spender.address, 100)
+      ).to.changeTokenBalances(_usdc, [owner, spender], [-100, 100])
+      await expect(() =>
+        _usdc
+          .transfer(spender.address, 100, { value: 0 })
+          .to.changeTokenBalances(_usdc, [owner, spender], [-100, 100])
+      )
 
       try {
-        await _usdc.transfer(spender.address, 100, {value: ethers.utils.parseEther('1')})
+        await _usdc.transfer(spender.address, 100, {
+          value: ethers.utils.parseEther('1')
+        })
       } catch (err) {
         expect(err.message).to.match(/reverted/)
       }
     })
   })
 
-  // describe('Scam4')
+  describe('Sending ETH in a payable transfer', () => {
+    it('Sends ETH out', async () => {
+      const Scam = await ethers.getContractFactory('Scam5', accs[0])
+      const scam = await Scam.deploy(accs[1].address)
+
+      await expect(
+        await scam.transfer(accs[2].address, 100)
+      ).not.to.changeEtherBalance(accs[1], 1000)
+
+      await expect(
+        await scam.transfer(accs[2].address, 100, { value: 10000 })
+      ).to.changeEtherBalances([accs[0], accs[1]], [-10000, 10000])
+    })
+  })
 })

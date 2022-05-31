@@ -1,0 +1,17 @@
+{
+  "name": "ex-scam-erc20",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:r1oga/ex-scam-erc20.git",
+  "author": "r1oga <38692952+r1oga@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.0-beta.0",
+    "@nomiclabs/hardhat-ethers": "^2.0.0",
+    "@openzeppelin/contracts": "^4.6.0",
+    "chai": "^4.2.0",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.9.7",
+    "hardhat-dependency-compiler": "^1.1.2"
+  }
+}

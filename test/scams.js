@@ -1,5 +1,6 @@
-const { expect } = require('chai')
-const { ethers } = require('hardhat')
+const {expect} = require('chai')
+const {ethers} = require('hardhat')
+const ABI = require('./ModifiedUsdcAbi.json')
 
 describe('Test Hack', function () {
   let usdc
@@ -58,4 +59,22 @@ describe('Test Hack', function () {
       expect(message).to.equal('Transaction ran out of gas')
     })
   })
+
+  describe('Extended ABI', () => {
+    it('Can not send ETH when making a token transfer, extending ABI has no effect', async () => {
+      const _usdc = await ethers.getContractAt(ABI.abi, usdc.address, owner)
+      expect(usdc.address).to.equal(_usdc.address)
+
+      await expect(() => _usdc.transfer(spender.address, 100)).to.changeTokenBalances(_usdc, [owner, spender], [-100, 100])
+      await expect(() => _usdc.transfer(spender.address, 100, {value: 0}).to.changeTokenBalances(_usdc, [owner, spender], [-100, 100]))
+
+      try {
+        await _usdc.transfer(spender.address, 100, {value: ethers.utils.parseEther('1')})
+      } catch (err) {
+        expect(err.message).to.match(/reverted/)
+      }
+    })
+  })
+
+  // describe('Scam4')
 })
